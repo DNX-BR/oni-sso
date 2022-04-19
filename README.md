@@ -94,4 +94,4 @@ Managed by [DNX Brasil](https://github.com/DNX-BR/).
 
 ## License
 
-Apache 2 Licensed. See [LICENSE](https://github.com/DNXLabs/one-cli/blob/master/LICENSE) for full details.
+Apache 2 Licensed. See [LICENSE](https://github.com/DNX-BR/oni-sso/blob/master/LICENSE) for full details.
