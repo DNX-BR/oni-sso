@@ -1,6 +1,6 @@
 # ONI-SSO
 
-CLI Tool to Login in AWS with Azure SSO and Google SSO
+CLI Tool to Login in AWS with Azure SSO (SAML), Google SSO(SAML) and AWS SSO
 
 ## Installation
 
