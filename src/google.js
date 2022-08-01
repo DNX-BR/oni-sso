@@ -55,12 +55,18 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   await page.type('input[type="email"]', email);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(2000);
+  if (process.env.DEBUG_SCREENSHOT)
+    await page.screenshot({path: 'post-enter-email.png'});
   await page.waitForSelector('input[type="password"]');
   await page.type('input[type="password"]', password);
   await page.keyboard.press('Enter');
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
-
+  
   await page.waitForTimeout(2000);
+
+  if (process.env.DEBUG_SCREENSHOT)
+    await page.screenshot({path: 'post-enter-password.png'});
+
 
   const currentPage = page.url();
 
@@ -113,6 +119,10 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
     await page.keyboard.press('Enter');
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
   }
+
+  if (process.env.DEBUG_SCREENSHOT)
+    await page.screenshot({path: 'post-mfa.png'});
+
 
   /* eslint-disable no-console */
   if (!SAMLResponse) {

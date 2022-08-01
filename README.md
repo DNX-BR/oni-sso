@@ -79,8 +79,8 @@ docker run -v $(pwd):/work  --rm -it dnxbrasil/oni-sso:latest assume-role -r <ro
 ## Extra settings
 * Login in AWS use default region us-east-1 if environment variable AWS_DEFAULT_REGION is not set
 * To avoid setting the appIdUri and tenantId every time on azure login, export the environment variables AZURE_APP_ID_URI and TENANT_ID
-
 * To avoid setting the idpId and spId every time on google login, export the environment variables GOOGLE_IDPID and GOOGLE_SPID
+* To avoid input username and password every time, you can export environment variables ONI_USERNAME and ONI_PASSWORD
 
 
 ## Contributing

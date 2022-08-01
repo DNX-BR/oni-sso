@@ -29,20 +29,29 @@ async function SelectAccount(accounts) {
 }
 
 async function GetUsernamePassword() {
-  const loginInput = await inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'email',
-        message: 'Enter a email:',
-      },
-      {
-        type: 'password',
-        message: 'Enter a password:',
-        name: 'password',
-      },
-    ]);
-  return loginInput;
+
+  if (process.env.ONI_USERNAME && process.env.ONI_PASSWORD) {
+    return {
+      email: process.env.ONI_USERNAME,
+      password: process.env.ONI_PASSWORD
+    }
+  } {
+    const loginInput = await inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'email',
+          message: 'Enter a email:',
+        },
+        {
+          type: 'password',
+          message: 'Enter a password:',
+          name: 'password',
+        },
+      ]);
+    return loginInput;
+  }
+
 }
 
 async function GetMFAGoogle() {
