@@ -3,6 +3,10 @@ const { GetAccountsFromPage } = require('./util');
 const { SelectAccount } = require('./input');
 const { TempCredentialsOutput } = require('./output');
 
+async function LoginAzure(pageAzure) {
+
+}
+
 async function LoginAWSSO(username, password, url) {
   const browser = await puppeteer.launch({
     headless: true,
