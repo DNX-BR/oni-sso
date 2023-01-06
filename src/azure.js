@@ -28,6 +28,7 @@ async function GetRoles(xml) {
 async function LoginAzureSSO(email, password, inputAppIdUri, inputTenantId) {
   const appIdUri = inputAppIdUri || process.env.AZURE_APP_ID_URI;
   const tenantId = inputTenantId || process.env.TENANT_ID;
+  const timeoutPage = process.env.TIMEOUT_PAGE || 5000;
 
   if (!appIdUri || !tenantId) {
     console.error('appIdUri or tenantId not found'); // eslint-disable-line  no-console
@@ -61,17 +62,29 @@ async function LoginAzureSSO(email, password, inputAppIdUri, inputTenantId) {
     }
   });
 
+  
   await page.goto(url, { waitUntil: 'networkidle2' });
+
+  await page.screenshot({path: '/tmp/initial-page.png'});
   await page.waitForSelector('input[type="email"]');
 
   await page.type('input[type="email"]', email);
   await page.keyboard.press('Enter');
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(timeoutPage);
+
+  await page.screenshot({path: '/tmp/post-enter-email.png'});
+
 
   await page.waitForSelector('input[type="password"]');
   await page.type('input[type="password"]', password);
   await page.keyboard.press('Enter');
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
+  await page.waitForTimeout(timeoutPage);
+
+  await page.screenshot({path: '/tmp/post-enter-password.png'});
+
+
+  await page.screenshot({path: '/tmp/pre-mfa.png'});
 
   const mfaExists = await page.evaluate(() => {
     const el = document.querySelector('#idDiv_SAOTCS_Proofs_Section'); // eslint-disable-line  no-undef
@@ -88,15 +101,24 @@ async function LoginAzureSSO(email, password, inputAppIdUri, inputTenantId) {
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
   }
 
+  await page.waitForTimeout(timeoutPage);
+
+  await page.screenshot({path: '/tmp/post-mfa.png'});
+
   const pageCotinueLoginExists = await page.evaluate(() => {
     const el = document.querySelector('input[id="idBtn_Back"]'); // eslint-disable-line  no-undef
     return !!el;
   });
 
+
   if (pageCotinueLoginExists) {
     await page.click('input[id="idBtn_Back"]');
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
   }
+
+
+  await page.screenshot({path: '/tmp/post-page-continue.png'});
+
 
   if (!SAMLResponse) {
     console.error('SAMLResponse not found!'); // eslint-disable-line  no-console

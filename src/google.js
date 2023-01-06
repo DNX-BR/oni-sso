@@ -28,6 +28,7 @@ async function GetRoles(xml) {
 async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   const idpid = inputIdpid || process.env.GOOGLE_IDPID;
   const spid = inputSpid || process.env.GOOGLE_SPID;
+  const timeoutPage = process.env.TIMEOUT_PAGE || 2000;
 
   /* eslint-disable no-console */
   if (!idpid || !spid) {
@@ -51,21 +52,24 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   });
 
   await page.goto(`https://accounts.google.com/o/saml2/initsso?idpid=${idpid}&spid=${spid}&forceauthn=false`, { waitUntil: 'networkidle2' });
+
+  await page.screenshot({path: '/tmp/initial-page.png'});
+
   await page.waitForSelector('input[type="email"]');
   await page.type('input[type="email"]', email);
   await page.keyboard.press('Enter');
-  await page.waitForTimeout(2000);
-  if (process.env.DEBUG_SCREENSHOT)
-    await page.screenshot({path: 'post-enter-email.png'});
+  await page.waitForTimeout(timeoutPage);
+
+  await page.screenshot({path: '/tmp/post-enter-email.png'});
+
   await page.waitForSelector('input[type="password"]');
   await page.type('input[type="password"]', password);
   await page.keyboard.press('Enter');
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
   
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(timeoutPage);
 
-  if (process.env.DEBUG_SCREENSHOT)
-    await page.screenshot({path: 'post-enter-password.png'});
+  await page.screenshot({path: '/tmp/post-enter-password.png'});
 
 
   const currentPage = page.url();
@@ -79,6 +83,8 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   /* Page Google Authenticate */
   const mfaGoogleAuth = currentPage.includes('/signin/challenge/totp') ? true : !!currentPage.includes('/signin/v2/challenge/totp');
 
+  await page.screenshot({path: '/tmp/pre-mfa-exists.png'});
+
   if (mfaCodeExists) {
     const buttonSendCode = await page.evaluate(() => {
       const el = document.querySelector('button[type="button"]'); /* eslint-disable-line no-undef */
@@ -87,7 +93,7 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
 
     if (buttonSendCode) {
       await page.click('button[type="button"]');
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(timeoutPage);
     }
 
     const mfaCode = await GetMFAGoogle();
@@ -108,7 +114,7 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
       });
       if (checkConfirmButtonExists) {
         await page.click('button[id="submit"]');
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(timeoutPage);
       }
     }
   }
@@ -118,10 +124,10 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
     await page.type('input[type="tel"]', mfaCode.mfa);
     await page.keyboard.press('Enter');
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
+    await page.waitForTimeout(timeoutPage);
   }
 
-  if (process.env.DEBUG_SCREENSHOT)
-    await page.screenshot({path: 'post-mfa.png'});
+  await page.screenshot({path: '/tmp/post-mfa.png'});
 
 
   /* eslint-disable no-console */
