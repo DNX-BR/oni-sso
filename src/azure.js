@@ -103,7 +103,9 @@ const LoginAzureSSO = async (email, password, inputAppIdUri, inputTenantId, moni
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
   await page.waitForTimeout(timeoutPage);
 
-  await page.screenshot({ path: '/tmp/mfa.png' });
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/mfa.png');
+  }
 
   const mfaExists = await page.evaluate(() => {
     const el = document.querySelector('#idDiv_SAOTCAS_Title');
@@ -115,6 +117,13 @@ const LoginAzureSSO = async (email, password, inputAppIdUri, inputTenantId, moni
   }
 
   if (mfaExists) {
+    const numberMfa = await page.evaluate(() => {
+      const el = document.querySelector('#idRichContext_DisplaySign'); // Seleciona o elemento pelo ID
+      return el.textContent.trim(); // Obtém o texto e remove espaços em branco extras
+    });
+    
+    console.log('\x1b[1mPut the value in app:\x1b[1m ' + numberMfa);
+
     const status = await GetConfirmCelAccept();
     if (!status) {
       console.error('You did not confirm authentication');
