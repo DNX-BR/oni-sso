@@ -7,16 +7,6 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { GetConfirmCelAccept } = require('./input');
 
-const folderPath = '/tmp';
-
-const clearFolder = (folderPath) => {
-  fs.readdirSync(folderPath).forEach((file) => {
-    const filePath = path.join(folderPath, file);
-    fs.unlinkSync(filePath);
-  });
-};
-
-clearFolder(folderPath);
 
 const deflate = util.promisify(zlib.deflateRaw);
 
@@ -49,11 +39,21 @@ const LoginAzureSSO = async (email, password, inputAppIdUri, inputTenantId, moni
   const tenantId = inputTenantId || process.env.TENANT_ID;
   const timeoutPage = process.env.TIMEOUT_PAGE || 5000;
   const captureScreenshot = monitor || false;
+  const folderPath = '/tmp';
 
   if (!appIdUri || !tenantId) {
     console.error('appIdUri or tenantId not found');
     process.exit(1);
   }
+
+  const clearFolder = (folderPath) => {
+    fs.readdirSync(folderPath).forEach((file) => {
+      const filePath = path.join(folderPath, file);
+      fs.unlinkSync(filePath);
+    });
+  };
+  
+  clearFolder(folderPath);
 
   const id = uuidv4();
 

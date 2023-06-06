@@ -1,6 +1,6 @@
 {
   "name": "oni-sso",
-  "version": "0.0.1",
+  "version": "1.2.0",
   "description": "tool for login by sso (Google, Azure and AWS SSO)",
   "main": "src/index.js",
   "scripts": {

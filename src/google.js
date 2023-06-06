@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 const { XMLParser } = require('fast-xml-parser');
 const { GetMFAGoogle, GetConfirmCelAccept } = require('./input');
+const fs = require('fs');
+const path = require('path');
 
 async function SAMLDecode(encodeSAML) {
   const uriDecoded = decodeURIComponent(encodeSAML);
@@ -25,10 +27,16 @@ async function GetRoles(xml) {
   /* eslint-disable no-restricted-syntax */
 }
 
-async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
+const GetScreenshot = async (page, outputPath) => {
+  await page.screenshot({ path: outputPath });
+};
+
+async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
   const idpid = inputIdpid || process.env.GOOGLE_IDPID;
   const spid = inputSpid || process.env.GOOGLE_SPID;
   const timeoutPage = process.env.TIMEOUT_PAGE || 2000;
+  const captureScreenshot = monitor || false;
+  const folderPath = '/tmp';
 
   /* eslint-disable no-console */
   if (!idpid || !spid) {
@@ -36,6 +44,15 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
     process.exit(1);
   }
   /* eslint-disable no-console */
+  
+  const clearFolder = (folderPath) => {
+    fs.readdirSync(folderPath).forEach((file) => {
+      const filePath = path.join(folderPath, file);
+      fs.unlinkSync(filePath);
+    });
+  };
+  
+  clearFolder(folderPath);
 
   let SAMLResponse = '';
   const browser = await puppeteer.launch({
@@ -53,14 +70,18 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
 
   await page.goto(`https://accounts.google.com/o/saml2/initsso?idpid=${idpid}&spid=${spid}&forceauthn=false`, { waitUntil: 'networkidle2' });
 
-  await page.screenshot({path: '/tmp/initial-page.png'});
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/initial-page.png');
+  }
 
   await page.waitForSelector('input[type="email"]');
   await page.type('input[type="email"]', email);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(timeoutPage);
 
-  await page.screenshot({path: '/tmp/post-enter-email.png'});
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/post-enter-email.png');
+  }
 
   await page.waitForSelector('input[type="password"]');
   await page.type('input[type="password"]', password);
@@ -69,8 +90,9 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   
   await page.waitForTimeout(timeoutPage);
 
-  await page.screenshot({path: '/tmp/post-enter-password.png'});
-
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/post-enter-password.png');
+  }
 
   const currentPage = page.url();
 
@@ -83,7 +105,9 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
   /* Page Google Authenticate */
   const mfaGoogleAuth = currentPage.includes('/signin/challenge/totp') ? true : !!currentPage.includes('/signin/v2/challenge/totp');
 
-  await page.screenshot({path: '/tmp/pre-mfa-exists.png'});
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/pre-mfa-exists.png');
+  }
 
   if (mfaCodeExists) {
     const buttonSendCode = await page.evaluate(() => {
@@ -127,7 +151,9 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid) {
     await page.waitForTimeout(timeoutPage);
   }
 
-  await page.screenshot({path: '/tmp/post-mfa.png'});
+  if (captureScreenshot) {
+    await GetScreenshot(page, '/tmp/post-mfa.png');
+  }
 
 
   /* eslint-disable no-console */
