@@ -84,6 +84,13 @@ async function init() {
           description: 'AWS profile name',
           default: 'default',
         })
+        .option('monitor-screen', {
+          alias: 'm',
+          type: 'boolean' ,
+          required: false,
+          description: 'Take screenshots of auth steps',
+          default: false,
+        })
         .strictOptions(),
     )
     .command(
@@ -173,7 +180,7 @@ async function init() {
     case 'auth-azure':
       console.log('Login Azure SSO ');
       inputs = await GetUsernamePassword();
-      config = await LoginAzureSSO(inputs.email, inputs.password, argv.a, argv.t);
+      config = await LoginAzureSSO(inputs.email, inputs.password, argv.a, argv.t, argv.m);
       roleSelected = await SelectRole(config.roles);
       cred = await AssumeRoleAWSSAML(config.saml, config.roles, roleSelected.role, argv.d);
       if (argv.o) await OutputFormat(argv.o, cred, argv.p);
