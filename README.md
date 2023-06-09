@@ -73,6 +73,7 @@ docker run -v $(pwd):/work  --rm -it dnxbrasil/oni-sso:latest assume-role -r <ro
                  [string] [options: "console", "one", "env", "export", "profile"]
   -d, --duration-seconds  AWS Session duration in seconds[number] [default: 3600]
   -p, --profile-name      AWS profile name          [string] [default: "default"]
+  -m, --monitor           Take screenshot of authenticate steps on directory /tmp  [boolean] [default: "false"]
 ```
 > WARNING: assume-role not work with auth-aws
 
