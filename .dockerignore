@@ -1,6 +1,9 @@
 node_modules/
+tmp/
 Dockerfile
 *.md
 LICENSE
 .eslintrc.yml
 .git*
+.env*
+.dockerignore

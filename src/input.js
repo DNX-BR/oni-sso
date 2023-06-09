@@ -51,7 +51,6 @@ async function GetUsernamePassword() {
       ]);
     return loginInput;
   }
-
 }
 
 async function GetMFAGoogle() {
