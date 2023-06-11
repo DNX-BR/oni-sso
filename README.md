@@ -2,6 +2,10 @@
 
 CLI Tool to Login in AWS with Azure SSO (SAML), Google SSO(SAML) and AWS SSO
 
+## Public Repository Image
+
+https://gallery.ecr.aws/dnxbrasil/oni-sso
+
 ## Installation
 
 ```bash
@@ -9,7 +13,7 @@ git clone git@gitlab.com:dnx-br/utilities/oni-sso.git
 cd oni-sso
 docker build -t oni-sso:latest .
 # or use our public image
-# docker pull public.ecr.aws/dnxbrasil/oni-sso:latest
+docker pull public.ecr.aws/dnxbrasil/oni-sso:latest
 ```
 
 
