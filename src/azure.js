@@ -49,7 +49,9 @@ const LoginAzureSSO = async (email, password, inputAppIdUri, inputTenantId, moni
   const clearFolder = (folderPath) => {
     fs.readdirSync(folderPath).forEach((file) => {
       const filePath = path.join(folderPath, file);
-      fs.unlinkSync(filePath);
+      try {
+        fs.unlinkSync(filePath);
+      } catch (error) {}
     });
   };
   
