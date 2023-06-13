@@ -48,7 +48,9 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
   const clearFolder = (folderPath) => {
     fs.readdirSync(folderPath).forEach((file) => {
       const filePath = path.join(folderPath, file);
-      fs.unlinkSync(filePath);
+      try {
+        fs.unlinkSync(filePath);
+      } catch (error) {}
     });
   };
   
