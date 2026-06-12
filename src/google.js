@@ -14,7 +14,7 @@ async function GetRoles(xml) {
   const roles = [];
   const parser = new XMLParser();
   const objectXML = parser.parse(xml);
-  const rolesXml = objectXML['saml2p:Response']['saml2:Assertion']['saml2:AttributeStatement']['saml2:Attribute'][1];
+  const rolesXml = objectXML['saml2p:Response']['saml2:Assertion']['saml2:AttributeStatement']['saml2:Attribute'][0];
   /* eslint-disable no-restricted-syntax */
   if (Array.isArray(rolesXml['saml2:AttributeValue'])) {
     for (const r of rolesXml['saml2:AttributeValue']) {
@@ -58,7 +58,7 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
 
   let SAMLResponse = '';
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     timeout: 120000,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
@@ -76,8 +76,8 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
     await GetScreenshot(page, '/tmp/initial-page.png');
   }
 
-  await page.waitForSelector('input[type="email"]');
-  await page.type('input[type="email"]', email);
+  await page.waitForSelector('input[type="text"]');
+  await page.type('input[type="text"]', email);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(timeoutPage);
 
@@ -169,6 +169,7 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
 
   const saml = await SAMLDecode(SAMLResponse);
   const roleList = await GetRoles(saml);
+
 
   return {
     saml,
