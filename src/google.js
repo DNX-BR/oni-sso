@@ -58,7 +58,7 @@ async function LoginGoogleSSO(email, password, inputIdpid, inputSpid, monitor) {
 
   let SAMLResponse = '';
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     timeout: 120000,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
