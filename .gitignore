@@ -2,3 +2,6 @@ node_modules/
 .env*
 credentials
 tmp/
+dist/
+.oni/
+.oni-sso/

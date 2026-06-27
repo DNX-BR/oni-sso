@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Atualizar Base de Conhecimento",
+  "description": "Ao final de uma execução, avalia se algo novo foi aprendido sobre o projeto e, em caso afirmativo, acrescenta uma entrada datada na seção \"Lições Aprendidas\" do steering .kiro/steering/project-knowledge.md.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Revise a tarefa que acabou de ser concluída nesta sessão. Decida se algo novo e durável foi aprendido sobre o projeto oni-sso: uma decisão de design, uma armadilha, um comando/fluxo que funcionou, uma particularidade de provedor (Google/Azure/AWS SSO), um seletor de DOM que mudou, ou uma convenção.\n\nSe NADA relevante foi aprendido (ex.: pergunta trivial, leitura simples, ou a informação já está documentada), NÃO faça nada e responda apenas \"Sem novas lições a registrar.\"\n\nSe houver algo relevante, acrescente UMA entrada curta (1-3 linhas), datada no formato AAAA-MM-DD, ao FINAL da seção \"## 8. Lições Aprendidas\" em .kiro/steering/project-knowledge.md (append-only, não reescreva entradas existentes). Se a descoberta pertencer a outra seção (arquitetura, variáveis de ambiente, fragilidades, etc.), atualize também essa seção. Não inclua segredos, credenciais ou tokens. Seja conciso."
+  }
+}

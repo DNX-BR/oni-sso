@@ -1,9 +1,23 @@
+# Dependências e artefatos (reinstalados/recompilados no build)
 node_modules/
+dist/
+
+# Dados locais sensíveis (credenciais, perfis de navegador, diagnósticos)
+.oni/
+.oni-sso/
 tmp/
-Dockerfile
+.env*
+credentials
+
+# Git e CI
+.git/
+.github/
+.gitignore
+.dockerignore
+
+# Itens não usados no build da imagem
 *.md
 LICENSE
-.eslintrc.yml
-.git*
-.env*
-.dockerignore
+test/
+eslint.config.js
+.kiro/
