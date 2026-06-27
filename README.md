@@ -124,6 +124,33 @@ when the email/password fields actually appear — on a trusted device nothing i
 * Security: the profile stores session cookies (equivalent to being logged in). Keep it private; don't use a shared dir.
 * Docker: to persist across containers, mount the profile dir as a volume, e.g. `-v $HOME/.oni-sso:/root/.oni-sso`.
 
+## WSL / Linux notes
+
+The container runs as **root** (`HOME=/root`), so the persistent profile lives at `/root/.oni-sso/profiles`.
+
+**Important (WSL):** the Chromium profile (`user-data-dir`) does **not** work on a Windows-backed mount (`/mnt/c/...` via drvfs) — file locking is broken there and the browser **hangs on launch** before any prompt. Symptom: with `ONI_PROFILE_DIR` pointing to a `/mnt/c` bind mount it freezes; with the default (`/root`, not mounted) it works but doesn't persist (`--rm`).
+
+**Recommended (persistence that works on WSL):** use a Docker **named volume** for the profile — it lives on the Linux VM filesystem (ext4), avoiding drvfs entirely:
+
+```bash
+docker volume create oni-sso-profiles
+
+docker run --rm -it \
+  -v "$PWD:/work" \
+  -v oni-sso-profiles:/root/.oni-sso \
+  public.ecr.aws/dnxbrasil/oni-sso:latest \
+  auth-azure -a "$AZURE_APP_ID_URI" -t "$AZURE_TENANT_ID" -o console
+```
+
+Run it twice — the second run should skip MFA (device remembered).
+
+Alternative: keep the repo inside the WSL home (`~/...`, ext4) instead of `/mnt/c`, then a bind mount works too.
+
+Other notes:
+- **Do not use `ONI_HEADFUL=1` in a container** — there is no X server, so a headed launch fails with "Missing X server". Containers always run headless. For first-time Google captcha seeding without a desktop, use `xvfb-run -a env ONI_HEADFUL=1 ...` (xvfb ships in the Playwright image) or seed the profile on a machine with a display and copy `~/.oni-sso`.
+- Bind mounts are written as root; on Linux either `sudo chown -R $USER ...` afterward or run with `--user "$(id -u):$(id -g)" -e HOME=/work -e ONI_PROFILE_DIR=/work/.oni-sso/profiles`.
+- If a profile got corrupted by a failed headed launch, remove it (e.g. `rm -rf .oni-sso/profiles/azure`) and re-run headless.
+
 ## Requirements
 * Runs on Node.js >= 22.12 (the published image is based on the official Playwright image). The browser flows (Google/Azure) use Playwright; AWS SSO uses the AWS SDK and needs no browser binary.
 

@@ -226,3 +226,33 @@ Padrão comum dos fluxos SAML (`google`/`azure`):
 - 2026-06-26 — `gh` CLI instalado via winget (GitHub.cli 2.95.0). Após instalar, recarregar PATH em novas sessões
   (`$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine')+';'+[Environment]::GetEnvironmentVariable('Path','User')`).
   Falta `gh auth login` (passo interativo do usuário). Push continua por SSH; `gh` é só para a API (criar PR).
+- 2026-06-26 — PR da v3 aberto (#10) a partir da branch `feat/v3-typescript-playwright-oidc`; CI `build` passou. O
+  `main` é PROTEGIDO: exige aprovação de revisão (`REVIEW_REQUIRED`) e o auto-merge está DESABILITADO no repo →
+  merge só após revisão humana (não usar `--admin` p/ burlar). Release no ECR dispara só por push de tag (merge não
+  publica). Commit exigiu identidade git: definida LOCAL no repo via conta GitHub (noreply), sem tocar config global.
+- 2026-06-26 — v3.0.0 MERGED no `main` (PR #10, merge commit `1057f2f`) e branch deletada; repo local sincronizado.
+  Imagem NÃO publicada (release no ECR só por push de tag → `git tag v3.0.0 && git push origin v3.0.0`; cuidado com
+  `:latest` por ser breaking). Dependabot abriu PRs p/ as actions antigas (build-push/login/setup-buildx) que ficaram
+  redundantes após a modernização dos workflows — fechar. `.kiro/steering/project-knowledge.md` segue versionado no repo.
+- 2026-06-26 — v3.0.0 PUBLICADA: tags do repo seguem padrão SEM `v` (ex.: `1.2.8`, `3.0.0`); a tag vira o sufixo da
+  imagem (`RELEASE_VERSION=github.ref_name`). Push da tag `3.0.0` disparou o workflow "Build and Push Oni Image"
+  (sucesso) → publicou `public.ecr.aws/dnxbrasil/oni-sso:3.0.0` e `:latest`. PRs/alertas do Dependabot p/ deps removidas
+  (uuid, fast-xml-parser, puppeteer/tar-fs/ws) falham e estão obsoletos → fechar.
+- 2026-06-26 — Limpeza pós-v3: fechados os PRs npm obsoletos do Dependabot (#6 fast-xml-parser, #7 uuid, #8 ws/puppeteer,
+  #9 tar-fs/puppeteer). Os 8 alertas de segurança auto-resolveram (0 abertos) após a v3 remover puppeteer/ws/tar-fs/uuid —
+  não foi preciso descartar manualmente. Restam abertos PRs de GitHub Actions (#11–#15: login@4, checkout@7, setup-node@6,
+  build-push@7, setup-buildx@4) — upgrades válidos a aplicar (ideal: bump direto nos workflows num único PR).
+- 2026-06-26 — Tag != Release no GitHub: o push da tag dispara o build/publish da imagem (workflow `on: push tags`),
+  mas NÃO cria entrada na aba Releases. Criar o Release (`gh release create 3.0.0 --notes ...`) é passo separado e
+  seguro (nenhum workflow em `on: release`; não rebuilda). Release 3.0.0 publicado (vira "Latest" por semver). Para
+  lançamentos futuros: `gh release create <versao> --generate-notes` cria tag + release + notas de uma vez.
+- 2026-06-26 — Persistência no Linux: a imagem roda como ROOT (HOME=/root) → perfil em `/root/.oni-sso/profiles`.
+  Docker: montar `-v "$HOME/.oni-sso:/root/.oni-sso"`. Gotcha: arquivos no host ficam root-owned (usar sudo p/ limpar,
+  ou rodar `--user $(id -u):$(id -g) -e HOME=/work -e ONI_PROFILE_DIR=/work/.oni-sso/profiles`; `/ms-playwright` é
+  world-readable, browsers rodam como não-root). Nativo: `npx playwright install --with-deps chromium`. Captcha do
+  Google em servidor sem tela: `xvfb-run -a env ONI_HEADFUL=1 ...` ou semear o perfil num desktop e copiar `~/.oni-sso`.
+- 2026-06-26 — Armadilha WSL+Docker: perfil persistente do Chromium (`user-data-dir`) NÃO funciona em mount do
+  Windows (`/mnt/c` via drvfs) — file-locking quebrado faz o launch TRAVAR antes do prompt. Sintoma: com
+  `ONI_PROFILE_DIR=/work/...` (bind no Windows) trava; sem (default `/root`, overlay Linux) funciona mas não persiste
+  (`--rm`). Solução: **volume nomeado** Docker mapeado p/ `/root/.oni-sso` (fica no ext4 da VM) ou repo no home do WSL.
+  Também: `ONI_HEADFUL=1` NÃO funciona em container (sem X server) → erro "Missing X server". Headless sempre em container.
