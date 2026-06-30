@@ -27,7 +27,7 @@
     "@inquirer/prompts": "^8.5.2",
     "commander": "^15.0.0",
     "fast-xml-parser": "^5.9.3",
-    "ini": "^5.0.0",
+    "ini": "^7.0.0",
     "playwright": "^1.61.1"
   },
   "devDependencies": {
