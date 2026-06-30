@@ -21,9 +21,9 @@
   "author": "favachinho",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-sso": "^3.1075.0",
-    "@aws-sdk/client-sso-oidc": "^3.1075.0",
-    "@aws-sdk/client-sts": "^3.1075.0",
+    "@aws-sdk/client-sso": "^3.1076.0",
+    "@aws-sdk/client-sso-oidc": "^3.1076.0",
+    "@aws-sdk/client-sts": "^3.1076.0",
     "@inquirer/prompts": "^8.5.2",
     "commander": "^15.0.0",
     "fast-xml-parser": "^5.9.3",
