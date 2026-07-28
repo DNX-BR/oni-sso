@@ -1,5 +1,5 @@
 # Build stage: compila TypeScript -> JavaScript.
-FROM mcr.microsoft.com/playwright:v1.61.1-noble AS build
+FROM mcr.microsoft.com/playwright:v1.62.0-noble AS build
 WORKDIR /app
 
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 # Runtime stage: somente dependências de produção + artefatos compilados.
-FROM mcr.microsoft.com/playwright:v1.61.1-noble
+FROM mcr.microsoft.com/playwright:v1.62.0-noble
 WORKDIR /app
 
 ENV NODE_ENV=production
