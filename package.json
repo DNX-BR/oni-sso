@@ -24,7 +24,7 @@
     "@aws-sdk/client-sso": "^3.1075.0",
     "@aws-sdk/client-sso-oidc": "^3.1075.0",
     "@aws-sdk/client-sts": "^3.1075.0",
-    "@inquirer/prompts": "^8.5.2",
+    "@inquirer/prompts": "^8.6.0",
     "commander": "^15.0.0",
     "fast-xml-parser": "^5.9.3",
     "ini": "^5.0.0",
